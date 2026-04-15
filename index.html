@@ -3,115 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Apple Vision | Animated 3D Product Showcase</title>
+    <title>Apple Store | iPhone & AirPods Pro</title>
     <style>
-        /* Reset & Base Styles - Apple Inspired */
-        body {
+        * {
             margin: 0;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: white;
-            background-color: #000;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Canvas takes full screen */
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            outline: none;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* UI Overlay - Elegant floating text */
-        .ui-container {
-            position: absolute;
-            bottom: 8%;
-            left: 0;
-            right: 0;
-            text-align: center;
-            pointer-events: none;
-            z-index: 10;
-            backdrop-filter: blur(8px);
-            background: rgba(0,0,0,0.4);
-            padding: 20px 16px;
-            border-radius: 40px;
-            width: fit-content;
-            margin: 0 auto;
-            transition: opacity 0.5s ease;
-        }
-
-        .title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff, #a0a0a0);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .subtitle {
-            font-size: 0.9rem;
-            font-weight: 400;
-            opacity: 0.9;
-            letter-spacing: 0.3px;
-        }
-
-        .instruction {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            z-index: 10;
-            font-family: monospace;
-            border: 0.5px solid rgba(255,255,255,0.2);
-        }
-
-        @media (max-width: 768px) {
-            .title { font-size: 1.2rem; }
-            .subtitle { font-size: 0.7rem; }
-            .instruction { font-size: 0.6rem; top: 12px; right: 12px; }
-            .ui-container { bottom: 5%; padding: 12px 20px; }
-        }
-
-        /* subtle gradient overlay for depth */
-        .gradient-overlay {
-            position: absolute;
+        /* Canvas 3D background */
+        #canvas-container {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+            z-index: 0;
+            pointer-events: auto;
+        }
+
+        /* UI Overlay - Store Front */
+        .store-ui {
+            position: relative;
+            z-index: 10;
             pointer-events: none;
-            z-index: 2;
+        }
+
+        /* Navigation Bar - Apple Style */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            pointer-events: auto;
+            border-bottom: 0.5px solid rgba(255,255,255,0.15);
+            font-weight: 500;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .bag-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 120px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #fff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+
+        .price-tag {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 28px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #0071e3;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #0077ed;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 0.5px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            z-index: 10;
+            background: #000;
+            padding: 100px 24px;
+            margin-top: 0;
+            backdrop-filter: blur(0px);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 60px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(30,30,35,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 32px 24px;
+            text-align: center;
+            border: 0.5px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: rgba(40,40,48,0.7);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #a1a1a6;
+            line-height: 1.4;
+        }
+
+        /* Specs Strip */
+        .specs {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            padding: 60px 24px;
+            background: rgba(10,10,15,0.7);
+            backdrop-filter: blur(10px);
+            margin: 40px 24px;
+            border-radius: 48px;
+            border: 0.5px solid rgba(255,255,255,0.08);
+        }
+
+        .spec-item {
+            text-align: center;
+        }
+
+        .spec-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .spec-label {
+            font-size: 0.85rem;
+            color: #86868b;
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 0.5px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: #86868b;
+            background: rgba(0,0,0,0.8);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-bar {
+                padding: 12px 20px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .nav-links a {
+                font-size: 0.75rem;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 0.9rem;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .feature-grid {
+                gap: 20px;
+            }
+            .specs {
+                gap: 24px;
+            }
+        }
+
+        /* Scroll hint */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
         }
     </style>
 </head>
 <body>
-    <div class="gradient-overlay"></div>
-    <div class="instruction">
-        🖱️ Mouse / Finger moves → 3D rotation
-    </div>
-    <div class="ui-container">
-        <div class="title">iPhone & AirPods Pro</div>
-        <div class="subtitle">Spatial Audio. Seamless Magic.</div>
+
+    <div id="canvas-container"></div>
+
+    <nav class="nav-bar">
+        <div class="logo"> Store</div>
+        <div class="nav-links">
+            <a href="#">iPhone</a>
+            <a href="#">AirPods</a>
+            <a href="#">Mac</a>
+            <a href="#">Support</a>
+        </div>
+        <div class="bag-icon">🛒</div>
+    </nav>
+
+    <div class="store-ui">
+        <div class="hero">
+            <h1>iPhone & AirPods Pro.</h1>
+            <p>Dynamic Island. Spatial Audio. Magic moves with you.</p>
+            <div class="price-tag">From $999 or $41.62/mo. for 24 mo.*</div>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">Buy</a>
+                <a href="#" class="btn btn-secondary">Learn more ></a>
+            </div>
+        </div>
+        <div class="scroll-hint">↓ Scroll to explore</div>
     </div>
 
-    <!-- Import Three.js core and add-ons from CDN -->
+    <div class="features">
+        <h2 class="section-title">Experience the ecosystem.</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3>Dynamic Island</h3>
+                <p>Seamless interactions and alerts that adapt to you.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎧</div>
+                <h3>Spatial Audio</h3>
+                <p>Immersive sound with dynamic head tracking.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>A17 Pro Chip</h3>
+                <p>Next‑level performance and efficiency.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>48MP Camera</h3>
+                <p>Pro camera system. Cinematic mode.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="specs">
+        <div class="spec-item">
+            <div class="spec-value">6.1"</div>
+            <div class="spec-label">Super Retina XDR</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-value">Up to 29h</div>
+            <div class="spec-label">Battery Life</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-value">IP68</div>
+            <div class="spec-label">Water Resistant</div>
+        </div>
+        <div class="spec-item">
+            <div class="spec-value">USB‑C</div>
+            <div class="spec-label">Compatible</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>* Price includes a $30 connectivity discount. Monthly pricing requires activation. <br>© 2025 Apple Store — Designed for the future.</p>
+    </div>
+
+    <!-- Three.js + GSAP for smooth animations -->
     <script type="importmap">
         {
             "imports": {
                 "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/",
+                "gsap": "https://unpkg.com/gsap@3.12.5/index.js"
             }
         }
     </script>
@@ -119,416 +407,318 @@
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        import gsap from 'gsap';
 
-        // --- Setup Scene, Cameras, Renderers ---
+        // --- Setup Scene, Camera, Renderer ---
+        const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x050b1a);
-        scene.fog = new THREE.FogExp2(0x050b1a, 0.008); // subtle depth fog
+        scene.background = new THREE.Color(0x010101);
+        scene.fog = new THREE.FogExp2(0x010101, 0.006);
 
-        // Camera: perspective for 3D objects
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1.5, 5);
+        // Camera: perspective with slight elevation
+        const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0.8, 5.2);
         camera.lookAt(0, 0, 0);
 
-        // WebGL Renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true; // shadows for depth
-        renderer.setClearColor(0x050b1a, 1);
-        document.body.appendChild(renderer.domElement);
+        renderer.shadowMap.enabled = true;
+        renderer.setClearColor(0x010101, 1);
+        container.appendChild(renderer.domElement);
 
-        // CSS2DRenderer for clean text labels (floating badge)
-        const labelRenderer = new CSS2DRenderer();
-        labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        labelRenderer.domElement.style.position = 'absolute';
-        labelRenderer.domElement.style.top = '0px';
-        labelRenderer.domElement.style.left = '0px';
-        labelRenderer.domElement.style.pointerEvents = 'none';
-        document.body.appendChild(labelRenderer.domElement);
-
-        // --- Lighting: dramatic, product-focused ---
-        // Ambient light
-        const ambientLight = new THREE.AmbientLight(0x404060);
-        scene.add(ambientLight);
+        // --- Lighting: Studio quality (Apple style) ---
+        // Ambient fill
+        const ambient = new THREE.AmbientLight(0x404060);
+        scene.add(ambient);
         
-        // Key light: directional from upper left
-        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        mainLight.position.set(3, 5, 2);
-        mainLight.castShadow = true;
-        mainLight.receiveShadow = false;
-        mainLight.shadow.mapSize.width = 1024;
-        mainLight.shadow.mapSize.height = 1024;
-        scene.add(mainLight);
+        // Key light
+        const keyLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+        keyLight.position.set(2, 3, 2.5);
+        keyLight.castShadow = true;
+        keyLight.receiveShadow = false;
+        scene.add(keyLight);
         
-        // Fill light from right (warm)
-        const fillLight = new THREE.PointLight(0xffaa66, 0.6);
-        fillLight.position.set(2, 1, 3);
+        // Fill warm
+        const fillLight = new THREE.PointLight(0xffaa66, 0.55);
+        fillLight.position.set(1.5, 1, 2);
         scene.add(fillLight);
         
-        // Back rim light (cool)
-        const rimLight = new THREE.PointLight(0x66aaff, 0.8);
-        rimLight.position.set(-1, 1.5, -3);
+        // Cool back rim
+        const rimLight = new THREE.PointLight(0x4488ff, 0.8);
+        rimLight.position.set(-1.2, 1.2, -2.8);
         scene.add(rimLight);
         
-        // Additional soft fill from below
-        const fillBottom = new THREE.PointLight(0x88aaff, 0.4);
-        fillBottom.position.set(0, -1, 1);
-        scene.add(fillBottom);
+        // Edge light for products
+        const edgeLight = new THREE.PointLight(0xffaa88, 0.6);
+        edgeLight.position.set(0.5, 1.2, -1);
+        scene.add(edgeLight);
         
-        // Dynamic mouse-controlled moving light (for interactive glow)
-        const mouseLight = new THREE.PointLight(0xffaa55, 0.9);
-        mouseLight.distance = 8;
-        mouseLight.decay = 1.5;
+        // Interactive moving light (mouse follow)
+        const mouseLight = new THREE.PointLight(0xffaa55, 0.85);
+        mouseLight.distance = 7;
+        mouseLight.decay = 1.2;
         scene.add(mouseLight);
         
-        // subtle spotlight on products
-        const spot = new THREE.SpotLight(0xffffff, 0.5);
-        spot.position.set(1, 2, 2);
-        spot.castShadow = false;
-        scene.add(spot);
-        
-        // --- Helper: reflective floor plane (transparent, glossy look) ---
-        const gridHelper = new THREE.GridHelper(12, 20, 0x88aaff, 0x335588);
-        gridHelper.position.y = -0.85;
+        // Floor reflection (glass-like)
+        const gridHelper = new THREE.GridHelper(12, 24, 0x88aaff, 0x335588);
+        gridHelper.position.y = -0.9;
         gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.35;
+        gridHelper.material.opacity = 0.25;
         scene.add(gridHelper);
         
-        // A subtle glossy disc under objects
-        const discGeometry = new THREE.CircleGeometry(1.6, 32);
-        const discMaterial = new THREE.MeshStandardMaterial({ color: 0x112233, roughness: 0.3, metalness: 0.7, transparent: true, opacity: 0.25 });
-        const groundDisc = new THREE.Mesh(discGeometry, discMaterial);
+        const discMat = new THREE.MeshStandardMaterial({ color: 0x112233, metalness: 0.85, roughness: 0.25, transparent: true, opacity: 0.2 });
+        const groundDisc = new THREE.Mesh(new THREE.CircleGeometry(1.9, 32), discMat);
         groundDisc.rotation.x = -Math.PI / 2;
-        groundDisc.position.y = -0.82;
+        groundDisc.position.y = -0.88;
         scene.add(groundDisc);
         
-        // --- Create Apple-style products ---
-        // 1. iPhone (sleek rectangular body with glass finish)
+        // --- Create iPhone Model (sleek) ---
         const phoneGroup = new THREE.Group();
-        
-        // Main body (dark titanium)
-        const bodyGeo = new THREE.BoxGeometry(0.7, 0.08, 1.45);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2c2e3a, metalness: 0.85, roughness: 0.25, emissive: 0x111111 });
+        // Body
+        const bodyGeo = new THREE.BoxGeometry(0.72, 0.085, 1.48);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2c2e3a, metalness: 0.88, roughness: 0.22, emissive: 0x111111 });
         const phoneBody = new THREE.Mesh(bodyGeo, bodyMat);
         phoneBody.castShadow = true;
-        phoneBody.receiveShadow = false;
         phoneGroup.add(phoneBody);
         
-        // Screen (glossy black with slight blue tint)
-        const screenGeo = new THREE.BoxGeometry(0.62, 0.02, 1.35);
-        const screenMat = new THREE.MeshStandardMaterial({ color: 0x0a0a1a, metalness: 0.95, roughness: 0.12, emissive: 0x001133 });
+        // Screen
+        const screenGeo = new THREE.BoxGeometry(0.64, 0.022, 1.38);
+        const screenMat = new THREE.MeshStandardMaterial({ color: 0x0a0a1a, metalness: 0.95, roughness: 0.1, emissive: 0x001133 });
         const screen = new THREE.Mesh(screenGeo, screenMat);
-        screen.position.z = 0.03;
-        screen.position.y = 0.045;
+        screen.position.z = 0.035;
+        screen.position.y = 0.047;
         phoneGroup.add(screen);
         
-        // Camera bump (tiny circle)
-        const cameraBumpGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.02, 24);
-        const bumpMat = new THREE.MeshStandardMaterial({ color: 0xccaa88, metalness: 0.7, roughness: 0.3 });
-        const cameraBump = new THREE.Mesh(cameraBumpGeo, bumpMat);
-        cameraBump.position.set(0.25, 0.055, 0.68);
-        cameraBump.rotation.x = 0;
-        phoneGroup.add(cameraBump);
+        // Dynamic Island (tiny pill)
+        const islandGeo = new THREE.BoxGeometry(0.22, 0.01, 0.08);
+        const islandMat = new THREE.MeshStandardMaterial({ color: 0x111122, emissive: 0x224466, emissiveIntensity: 0.3 });
+        const dynamicIsland = new THREE.Mesh(islandGeo, islandMat);
+        dynamicIsland.position.set(0, 0.055, 0.62);
+        phoneGroup.add(dynamicIsland);
         
-        // Side buttons (tiny)
-        const buttonMat = new THREE.MeshStandardMaterial({ color: 0xccccdd, metalness: 0.5 });
-        const volUp = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.08), buttonMat);
-        volUp.position.set(0.38, 0.02, 0.3);
-        phoneGroup.add(volUp);
+        // Camera lens
+        const lensMat = new THREE.MeshStandardMaterial({ color: 0xccaaff, metalness: 0.95 });
+        const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.02, 24), lensMat);
+        lens.position.set(0.28, 0.055, 0.68);
+        phoneGroup.add(lens);
         
-        const volDown = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.08), buttonMat);
-        volDown.position.set(0.38, -0.03, 0.3);
-        phoneGroup.add(volDown);
+        // Apple logo
+        const logoMatGloss = new THREE.MeshStandardMaterial({ color: 0xddddff, metalness: 0.9 });
+        const logoPlate = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.01, 0.14), logoMatGloss);
+        logoPlate.position.set(0, -0.048, -0.58);
+        phoneGroup.add(logoPlate);
         
-        // Apple logo on back (CSS2D or small decal? use tiny metal disc)
-        const logoMat = new THREE.MeshStandardMaterial({ color: 0xaaaaee, metalness: 0.9, emissive: 0x224466 });
-        const logoDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.01, 16), logoMat);
-        logoDisc.rotation.x = Math.PI / 2;
-        logoDisc.position.set(0, -0.045, -0.55);
-        phoneGroup.add(logoDisc);
-        
-        phoneGroup.position.set(-0.85, -0.2, 0);
-        phoneGroup.rotation.y = -0.2;
+        phoneGroup.position.set(-0.9, -0.25, 0);
+        phoneGroup.rotation.y = -0.18;
         scene.add(phoneGroup);
         
-        // 2. AirPods Buds (two sleek buds + charging case)
-        const budsGroup = new THREE.Group();
+        // --- AirPods Pro Model (Case + Buds) ---
+        const budsMaster = new THREE.Group();
         
-        // Charging case (rounded pill)
-        const caseGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.35, 32);
-        const caseMat = new THREE.MeshStandardMaterial({ color: 0xe8eef2, metalness: 0.65, roughness: 0.3 });
-        const chargingCase = new THREE.Mesh(caseGeo, caseMat);
-        chargingCase.scale.set(0.9, 0.7, 1.1);
-        chargingCase.position.y = -0.1;
-        budsGroup.add(chargingCase);
+        // Charging Case
+        const caseGeo = new THREE.CylinderGeometry(0.58, 0.58, 0.38, 32);
+        const caseMatWhite = new THREE.MeshStandardMaterial({ color: 0xeef2f5, metalness: 0.7, roughness: 0.28 });
+        const chargingCase = new THREE.Mesh(caseGeo, caseMatWhite);
+        chargingCase.scale.set(0.92, 0.68, 1.05);
+        chargingCase.position.y = -0.12;
+        budsMaster.add(chargingCase);
         
-        // Case lid accent
-        const lidGeo = new THREE.SphereGeometry(0.48, 32, 16);
-        const lidMat = new THREE.MeshStandardMaterial({ color: 0xf5f7fa, metalness: 0.7, roughness: 0.2 });
-        const lid = new THREE.Mesh(lidGeo, lidMat);
-        lid.scale.set(0.9, 0.2, 1.0);
-        lid.position.y = 0.12;
-        budsGroup.add(lid);
+        const lidCap = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), caseMatWhite);
+        lidCap.scale.set(0.9, 0.18, 0.95);
+        lidCap.position.y = 0.11;
+        budsMaster.add(lidCap);
         
-        // Left Bud: elegant stem + pod
+        // Left Bud
         const leftBud = new THREE.Group();
-        const stemGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.45, 8);
-        const stemMat = new THREE.MeshStandardMaterial({ color: 0xf0f2f5, metalness: 0.8, roughness: 0.25 });
-        const leftStem = new THREE.Mesh(stemGeo, stemMat);
-        leftStem.position.y = -0.15;
+        const stemMatWhite = new THREE.MeshStandardMaterial({ color: 0xf5f7fc, metalness: 0.82, roughness: 0.2 });
+        const leftStem = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.48, 8), stemMatWhite);
+        leftStem.position.y = -0.18;
         leftBud.add(leftStem);
-        
-        const podGeo = new THREE.SphereGeometry(0.17, 32, 32);
-        const podMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.9, roughness: 0.15 });
-        const leftPod = new THREE.Mesh(podGeo, podMat);
-        leftPod.position.y = 0.12;
-        leftPod.scale.set(1.1, 0.7, 0.9);
+        const leftPodGeo = new THREE.SphereGeometry(0.18, 32, 32);
+        const leftPodMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.88, roughness: 0.12 });
+        const leftPod = new THREE.Mesh(leftPodGeo, leftPodMat);
+        leftPod.position.y = 0.13;
+        leftPod.scale.set(1.08, 0.7, 0.92);
         leftBud.add(leftPod);
-        
-        // Grille detail
-        const grilleMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
-        const grille = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.08), grilleMat);
-        grille.position.set(0, 0.05, 0.18);
-        leftPod.add(grille);
-        
-        leftBud.position.set(0.65, 0.05, 0.45);
-        leftBud.rotation.z = -0.2;
-        leftBud.rotation.x = 0.3;
-        budsGroup.add(leftBud);
+        leftBud.position.set(0.7, 0.02, 0.52);
+        leftBud.rotation.z = -0.25;
+        leftBud.rotation.x = 0.32;
+        budsMaster.add(leftBud);
         
         // Right Bud
         const rightBud = new THREE.Group();
-        const rightStem = new THREE.Mesh(stemGeo, stemMat);
-        rightStem.position.y = -0.15;
+        const rightStem = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.48, 8), stemMatWhite);
+        rightStem.position.y = -0.18;
         rightBud.add(rightStem);
-        const rightPod = new THREE.Mesh(podGeo, podMat);
-        rightPod.position.y = 0.12;
-        rightPod.scale.set(1.1, 0.7, 0.9);
+        const rightPod = new THREE.Mesh(leftPodGeo, leftPodMat);
+        rightPod.position.y = 0.13;
+        rightPod.scale.set(1.08, 0.7, 0.92);
         rightBud.add(rightPod);
-        const grilleR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.03, 0.08), grilleMat);
-        grilleR.position.set(0, 0.05, 0.18);
-        rightPod.add(grilleR);
+        rightBud.position.set(-0.7, 0.02, 0.52);
+        rightBud.rotation.z = 0.25;
+        rightBud.rotation.x = 0.32;
+        budsMaster.add(rightBud);
         
-        rightBud.position.set(-0.65, 0.05, 0.45);
-        rightBud.rotation.z = 0.2;
-        rightBud.rotation.x = 0.3;
-        budsGroup.add(rightBud);
+        budsMaster.position.set(0.92, -0.28, 0.2);
+        budsMaster.rotation.y = 0.28;
+        scene.add(budsMaster);
         
-        budsGroup.position.set(0.85, -0.25, 0.15);
-        budsGroup.rotation.y = 0.3;
-        scene.add(budsGroup);
-        
-        // --- Additional floating particles for Apple "magic" ---
-        const particleCount = 600;
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlePositions = new Float32Array(particleCount * 3);
+        // --- Decorative floating particles (Apple "magic dust") ---
+        const particleCount = 800;
+        const particleGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
         for (let i = 0; i < particleCount; i++) {
-            particlePositions[i*3] = (Math.random() - 0.5) * 12;
-            particlePositions[i*3+1] = (Math.random() - 0.5) * 5 + 0.5;
-            particlePositions[i*3+2] = (Math.random() - 0.5) * 8 - 2;
+            positions[i*3] = (Math.random() - 0.5) * 12;
+            positions[i*3+1] = (Math.random() - 0.5) * 5 + 0.5;
+            positions[i*3+2] = (Math.random() - 0.5) * 8 - 1.5;
         }
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-        const particleMaterial = new THREE.PointsMaterial({
-            color: 0x77aaff,
-            size: 0.03,
-            transparent: true,
-            opacity: 0.5,
-            blending: THREE.AdditiveBlending
-        });
-        const particleSystem = new THREE.Points(particlesGeometry, particleMaterial);
-        scene.add(particleSystem);
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0x77aaff, size: 0.022, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
         
-        // Animated glowing rings around products (aura)
-        const ringGeo = new THREE.TorusGeometry(0.95, 0.02, 64, 200);
-        const ringMat = new THREE.MeshStandardMaterial({ color: 0x3399ff, emissive: 0x2266aa, transparent: true, opacity: 0.6 });
-        const ring1 = new THREE.Mesh(ringGeo, ringMat);
-        ring1.position.set(-0.85, -0.1, 0);
-        ring1.rotation.x = Math.PI / 2;
-        scene.add(ring1);
+        // Glowing rings around products
+        const ringMatGlow = new THREE.MeshStandardMaterial({ color: 0x3399ff, emissive: 0x2266aa, transparent: true, opacity: 0.45 });
+        const ringPhone = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.022, 64, 200), ringMatGlow);
+        ringPhone.position.set(-0.9, -0.12, 0);
+        ringPhone.rotation.x = Math.PI / 2;
+        scene.add(ringPhone);
         
-        const ring2 = new THREE.Mesh(ringGeo, ringMat);
-        ring2.position.set(0.85, -0.1, 0.25);
-        ring2.rotation.x = Math.PI / 2 + 0.2;
-        ring2.scale.set(0.7, 0.7, 0.7);
-        scene.add(ring2);
+        const ringBuds = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.022, 64, 200), ringMatGlow);
+        ringBuds.position.set(0.92, -0.12, 0.35);
+        ringBuds.rotation.x = Math.PI / 2 + 0.15;
+        ringBuds.scale.set(0.75, 0.75, 0.75);
+        scene.add(ringBuds);
         
-        // --- Mouse / Touch Interactive 3D Orientation ---
-        // Target rotation angles (Yaw, Pitch)
-        let targetRotationX = 0;
-        let targetRotationY = 0;
-        let currentRotationX = 0;
-        let currentRotationY = 0;
+        // --- Mouse / Touch 3D Orientation + smooth follow ---
+        let targetRotY = 0;
+        let targetRotX = 0;
+        let currentRotY = 0;
+        let currentRotX = 0;
         
-        // Variables for smooth follow
-        let mouseXNormalized = 0;
-        let mouseYNormalized = 0;
-        
-        // For device orientation fallback (mobile)
-        let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        // Event listener for mouse move (desktop) and touch move (mobile)
         function handleMove(clientX, clientY) {
-            // Normalize coordinates: -1 to 1 range (X: left -1, right 1; Y: top -1, bottom 1)
             const x = (clientX / window.innerWidth) * 2 - 1;
             const y = (clientY / window.innerHeight) * 2 - 1;
-            // Map to rotation: max ±0.8 rad (~45 degrees) for dynamic but natural view
-            targetRotationY = x * 0.7;   // yaw
-            targetRotationX = y * 0.5;   // pitch
-            // Update moving light position
-            const lightX = (x * 2.5);
-            const lightY = (-y * 1.8) + 0.5;
-            mouseLight.position.set(lightX, lightY, 2.5);
+            targetRotY = x * 0.65;   // yaw
+            targetRotX = y * 0.45;   // pitch
+            // Move interactive light with mouse
+            mouseLight.position.set(x * 2.2, -y * 1.5 + 0.4, 2.4);
         }
         
-        window.addEventListener('mousemove', (e) => {
-            handleMove(e.clientX, e.clientY);
-        });
-        
+        window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
         window.addEventListener('touchmove', (e) => {
-            if (e.touches.length) {
-                handleMove(e.touches[0].clientX, e.touches[0].clientY);
-            }
+            if (e.touches.length) handleMove(e.touches[0].clientX, e.touches[0].clientY);
         });
         
-        // For devices that support deviceorientation, add slight gyro effect (enhances 3D orientation)
-        if (window.DeviceOrientationEvent && isMobile) {
+        // Device orientation for mobile (extra immersion)
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             window.addEventListener('deviceorientation', (e) => {
-                if (e.beta !== null && e.gamma !== null) {
-                    // gamma: left to right (-90 to 90), beta: front-back
-                    const gamma = Math.min(Math.max(e.gamma / 45, -1), 1);
-                    const beta = Math.min(Math.max(e.beta / 45, -0.8), 0.8);
-                    targetRotationY = gamma * 0.6;
-                    targetRotationX = beta * 0.4;
-                    // Light follows device tilt as well
-                    mouseLight.position.set(gamma * 2, -beta * 1.5 + 0.3, 2.2);
+                if (e.gamma !== null) {
+                    const gamma = Math.min(Math.max(e.gamma / 40, -0.8), 0.8);
+                    const beta = Math.min(Math.max(e.beta / 40, -0.5), 0.5);
+                    targetRotY = gamma * 0.7;
+                    targetRotX = beta * 0.5;
+                    mouseLight.position.set(gamma * 1.8, -beta * 1.2 + 0.2, 2.2);
                 }
             });
         }
         
-        // Optional: subtle auto animation if idle (gentle breathing)
-        let idleTimer;
-        function resetIdle() {
-            if (idleTimer) clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                // Gentle floating after 3 seconds of no interaction? but keep last orientation, just add micro motion
-                // Not necessary, but we'll implement subtle default orbit drift after 5s? Actually not needed.
-            }, 3000);
-        }
-        window.addEventListener('mousemove', resetIdle);
-        window.addEventListener('touchstart', resetIdle);
+        // --- GSAP scroll animation for products (entrance and scroll reveal) ---
+        // Initial floating entrance
+        gsap.fromTo(phoneGroup.position, { y: -1.2, opacity: 0 }, { y: -0.25, duration: 1.2, ease: "back.out(0.6)", delay: 0.2 });
+        gsap.fromTo(budsMaster.position, { y: -1.5, opacity: 0 }, { y: -0.28, duration: 1.2, ease: "back.out(0.6)", delay: 0.3 });
+        gsap.fromTo([ringPhone, ringBuds], { scale: 0, opacity: 0 }, { scale: 1, opacity: 0.45, duration: 1, stagger: 0.2, delay: 0.5 });
         
-        // --- Animation Loop & Smooth Camera Rotation ---
-        // Also animate rings & particles & bud bounce
+        // Scroll-triggered subtle float using GSAP (no external lib for scroll needed, just additional effect)
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const progress = Math.min(scrollY / maxScroll, 1);
+            // Slight parallax for products based on scroll
+            phoneGroup.position.y = -0.25 + progress * 0.08;
+            budsMaster.position.y = -0.28 + progress * 0.07;
+            // rotate rings
+            ringPhone.rotation.z += 0.01;
+            ringBuds.rotation.z -= 0.008;
+        });
         
-        let time = 0;
+        // --- Animation Loop with smooth camera & product float ---
+        let clock = new THREE.Clock();
         
-        function animate() {
-            requestAnimationFrame(animate);
-            time += 0.012;
+        function animateScene() {
+            const delta = clock.getDelta();
+            const elapsedTime = performance.now() / 1000;
             
-            // Smooth interpolation for camera rotation (easing)
-            currentRotationY += (targetRotationY - currentRotationY) * 0.08;
-            currentRotationX += (targetRotationX - currentRotationX) * 0.08;
+            // Smooth camera interpolation
+            currentRotY += (targetRotY - currentRotY) * 0.08;
+            currentRotX += (targetRotX - currentRotX) * 0.08;
             
-            // Apply rotation to camera around world Y and local X? For orbiting feel but keep products centered
-            // We'll position camera in a spherical coordinate relative to center (0,0,0)
-            const radius = 5.2;
-            const baseYaw = currentRotationY;
-            const basePitch = Math.min(Math.max(currentRotationX, -0.6), 0.6);
-            
-            const camX = Math.sin(baseYaw) * radius * 0.8;
-            const camZ = Math.cos(baseYaw) * radius;
-            const camY = 1.2 + basePitch * 1.5;
+            const radius = 5.3;
+            const camX = Math.sin(currentRotY) * radius * 0.7;
+            const camZ = Math.cos(currentRotY) * radius;
+            const camY = 0.9 + currentRotX * 1.4;
             
             camera.position.x = camX;
-            camera.position.y = camY;
             camera.position.z = camZ;
+            camera.position.y = Math.max(0.5, camY);
             camera.lookAt(0, 0.1, 0);
             
-            // Dynamic product floating animation (subtle hover)
-            phoneGroup.position.y = -0.2 + Math.sin(time * 2.5) * 0.008;
-            budsGroup.position.y = -0.25 + Math.cos(time * 2.2) * 0.008;
-            // Buds slight rotation sway
-            budsGroup.rotation.z = 0.25 + Math.sin(time * 1.8) * 0.03;
-            phoneGroup.rotation.z = -0.15 + Math.cos(time * 2.0) * 0.02;
+            // Subtle floating animations
+            phoneGroup.rotation.z = -0.15 + Math.sin(elapsedTime * 2.2) * 0.02;
+            budsMaster.rotation.z = 0.25 + Math.cos(elapsedTime * 1.9) * 0.02;
+            budsMaster.rotation.y = 0.28 + Math.sin(elapsedTime * 1.2) * 0.015;
             
-            // Rotate rings
-            ring1.rotation.z += 0.008;
-            ring2.rotation.x = Math.PI / 2 + 0.2 + Math.sin(time) * 0.1;
-            ring2.rotation.z += 0.005;
+            // Dynamic Island pulse
+            const pulse = 0.25 + Math.sin(elapsedTime * 4) * 0.08;
+            dynamicIsland.material.emissiveIntensity = pulse;
+            screenMat.emissiveIntensity = 0.15 + Math.sin(elapsedTime * 2.5) * 0.05;
             
-            // Particle animation: gentle drifting
-            particleSystem.rotation.y += 0.001;
-            particleSystem.rotation.x = Math.sin(time * 0.2) * 0.1;
+            // Animate rings rotation
+            ringPhone.rotation.z += 0.008;
+            ringBuds.rotation.x += 0.005;
             
-            // Update mouse light color shifting with time
-            const hue = (time * 0.1) % 1;
-            mouseLight.intensity = 0.7 + Math.sin(time * 2) * 0.2;
+            // Particles gentle drift
+            particles.rotation.y += 0.0008;
+            particles.rotation.x = Math.sin(elapsedTime * 0.15) * 0.05;
             
-            // Add a subtle glow effect to screen emissive
-            screenMat.emissiveIntensity = 0.2 + Math.sin(time * 3) * 0.05;
+            // Mouse light intensity variation
+            mouseLight.intensity = 0.7 + Math.sin(elapsedTime * 3) * 0.2;
             
-            // Render
             renderer.render(scene, camera);
-            labelRenderer.render(scene, camera);
+            requestAnimationFrame(animateScene);
         }
         
-        animate();
+        animateScene();
         
-        // Handle window resize
-        window.addEventListener('resize', onWindowResize, false);
-        function onWindowResize() {
+        // Handle resize
+        window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        }
+        });
         
-        // Add a small floating CSS2D label for "AirPods Pro" and "iPhone"
-        const makeLabel = (text, color, position) => {
-            const div = document.createElement('div');
-            div.textContent = text;
-            div.style.color = color;
-            div.style.fontSize = '14px';
-            div.style.fontWeight = '500';
-            div.style.background = 'rgba(20,20,40,0.7)';
-            div.style.backdropFilter = 'blur(8px)';
-            div.style.padding = '4px 12px';
-            div.style.borderRadius = '20px';
-            div.style.border = '0.5px solid rgba(255,255,255,0.2)';
-            div.style.fontFamily = 'inherit';
-            div.style.letterSpacing = '0.5px';
-            const label = new CSS2DObject(div);
-            label.position.copy(position);
-            scene.add(label);
-        };
+        // Small CSS glow labels (optional but adds charm)
+        const style = document.createElement('style');
+        style.textContent = `
+            .floating-label {
+                position: absolute;
+                background: rgba(20,20,30,0.7);
+                backdrop-filter: blur(12px);
+                padding: 4px 12px;
+                border-radius: 40px;
+                font-size: 12px;
+                color: white;
+                border: 0.5px solid rgba(255,255,255,0.2);
+                pointer-events: none;
+                z-index: 100;
+                font-weight: 500;
+            }
+        `;
+        document.head.appendChild(style);
         
-        makeLabel('iPhone 15 Pro', '#ffffff', new THREE.Vector3(-0.85, 0.35, 0));
-        makeLabel('AirPods Pro 2', '#ffffff', new THREE.Vector3(0.85, 0.25, 0.45));
-        
-        // Tiny glowing stars effect (extra sparkle)
-        const starGeometry = new THREE.BufferGeometry();
-        const starCount = 400;
-        const starPositionsArray = new Float32Array(starCount * 3);
-        for (let i = 0; i < starCount; i++) {
-            starPositionsArray[i*3] = (Math.random() - 0.5) * 80;
-            starPositionsArray[i*3+1] = (Math.random() - 0.5) * 30;
-            starPositionsArray[i*3+2] = (Math.random() - 0.5) * 40 - 20;
-        }
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositionsArray, 3));
-        const starMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.05, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
-        const stars = new THREE.Points(starGeometry, starMat);
-        scene.add(stars);
-        
-        // Initial orientation hint: slight rotation on load
-        setTimeout(() => {
-            targetRotationY = 0.15;
-            targetRotationX = 0.05;
-        }, 100);
-        
-        console.log('Apple-style 3D experience ready — mouse moves the world');
+        console.log("Apple Store 3D Experience Loaded — Move your mouse or tilt device!");
     </script>
 </body>
 </html>
